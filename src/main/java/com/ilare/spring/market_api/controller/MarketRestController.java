@@ -2,7 +2,7 @@ package com.ilare.spring.market_api.controller;
 
 import org.springframework.web.bind.annotation.*;
 
-@RestController()
+@RestController
 @RequestMapping("/api")
 public class MarketRestController {
 

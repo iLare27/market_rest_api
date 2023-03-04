@@ -19,23 +19,20 @@ public class UserService {
     @Autowired
     private ProductService productService;
 
-    @Autowired
-    private ProductRepository productRepository;
-
     public void addUser(User user) {
         userRepository.save(user); // требуется валидация данных
     }
 
-    public void deleteUser(Long id) throws UserNotFoundException, ProductNotFoundException {
-        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found"));
-        for (Product product : user.getProducts()) {
-            productService.deleteProduct(product.getId());
-        }
-        userRepository.deleteById(id);
+    public void deleteUser(Long id) throws UserNotFoundException {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        userRepository.delete(user);
     }
 
     public User getUserById(Long userId) throws UserNotFoundException {
-        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
         return user;
     }
 

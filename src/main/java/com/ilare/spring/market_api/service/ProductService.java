@@ -9,6 +9,7 @@ import com.ilare.spring.market_api.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -19,27 +20,38 @@ public class ProductService {
     @Autowired
     private UserRepository userRepository;
 
-    public void saveProduct(Product product, Long userId) throws UserNotFoundException {
-        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
+    @Autowired
+    private ImageService imageService;
+
+    public void addProduct(Product product, Long userId) throws UserNotFoundException {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
         user.addProductToUser(product);
+
+        productRepository.save(product);
         userRepository.save(user);
     }
 
     public void updateProduct(Product product, Long userId) throws UserNotFoundException {
-        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
         user.addProductToUser(product);
+
+        productRepository.save(product);
         userRepository.save(user);
     }
-    public void deleteProduct(Long id) throws ProductNotFoundException {
-        Product product = productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException("Product not found"));
-        String photoPath = product.getPhotoPath();
-        productRepository.deleteById(id);
-//        deletePhoto(photoPath);
+    public void deleteProduct(Long productId) throws ProductNotFoundException {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException("Product not found"));
+
+        productRepository.delete(product);
     }
 
-    public Product getProductById(Long productId) throws ProductNotFoundException {
-       Product product = productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException("Product not found"));
-       return product;
+    public Product getProductById(Long productId) throws ProductNotFoundException, IOException {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException("Product not found"));
+
+        return product;
     }
 
     public List<Product> getProducts() {

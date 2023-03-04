@@ -2,11 +2,11 @@ package com.ilare.spring.market_api.controller;
 
 import com.ilare.spring.market_api.entity.Product;
 import com.ilare.spring.market_api.entity.User;
-import com.ilare.spring.market_api.exception.ProductNotFoundException;
 import com.ilare.spring.market_api.exception.UserNotFoundException;
 import com.ilare.spring.market_api.service.ProductService;
 import com.ilare.spring.market_api.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,37 +22,64 @@ public class UserRestController {
     ProductService productService;
 
     @PostMapping
-    public void addUser(@RequestBody User user) {
+    public ResponseEntity<?> addUser(@RequestBody User user) {
         userService.addUser(user);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{userId}")
-    public User getUser(@PathVariable Long userId) throws UserNotFoundException {
-        User user = userService.getUserById(userId);
-        return user;
+    public ResponseEntity<?> getUser(@PathVariable Long userId) {;
+        try {
+            User user = userService.getUserById(userId);
+            return ResponseEntity.ok(user);
+        }
+        catch (UserNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping
-    public List<User> getUsers() {
+    public ResponseEntity<?> getUsers() {
         List<User> users = userService.getUsers();
-        return users;
+        return ResponseEntity.ok(users);
     }
 
     @DeleteMapping("/{userId}")
-    public void deleteUser(@PathVariable Long userId) throws UserNotFoundException, ProductNotFoundException {
-        userService.deleteUser(userId);
+    public ResponseEntity<?> deleteUser(@PathVariable Long userId) {
+        try {
+            userService.deleteUser(userId);
+            return ResponseEntity.ok().build();
+        }
+        catch(UserNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    //@PutMapping
-    //public void updateUser(@RequestBody User user) {}
+//    @PutMapping
+//    public void updateUser(@RequestBody User user) {
+//        userService.
+//    }
 
-    @PostMapping("/{userId}")
-    public void addProductToUser(@RequestBody Product product, @PathVariable Long userId) throws UserNotFoundException {
-        productService.saveProduct(product, userId);
+    @PostMapping(value = "/{userId}")
+    public ResponseEntity<?> addProductToUser(@RequestBody Product product, @PathVariable Long userId) {
+        try {
+            productService.addProduct(product, userId);
+            return ResponseEntity.ok().build();
+        }
+        catch(UserNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PutMapping("/{userId}")
-    public void updateUserProduct(@RequestBody Product product, @PathVariable Long userId) throws UserNotFoundException {
-        productService.updateProduct(product, userId);
+    public ResponseEntity<?> updateUserProduct(@RequestBody Product product, @PathVariable Long userId) {
+        try {
+            productService.updateProduct(product, userId);
+            return ResponseEntity.ok().build();
+        }
+        catch(UserNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
+

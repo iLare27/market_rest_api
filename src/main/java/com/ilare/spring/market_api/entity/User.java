@@ -17,13 +17,13 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private long id;
 
     @Column(name = "nickname")
     private String nickname;
 
     @Column(name = "passwordhash")
-    @JsonIgnore // Для безопасности
     private String passwordhash;
 
     @Column(name = "name")
@@ -38,7 +38,7 @@ public class User {
     @Column(name = "phonenumber")
     private String phoneNumber;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = {CascadeType.MERGE, CascadeType.REMOVE})
     private List<Product> products;
 
     public void addProductToUser(Product... products) {
