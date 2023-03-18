@@ -19,6 +19,7 @@ public class Image {
 
     @Column(name = "url")
     private String url;
+
     @ManyToOne
     @JoinColumn(name = "product_id")
     @JsonIgnore

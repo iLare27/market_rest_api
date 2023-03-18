@@ -1,33 +1,55 @@
 package com.ilare.spring.market_api.service;
 
-import com.ilare.spring.market_api.entity.Product;
 import com.ilare.spring.market_api.entity.User;
-import com.ilare.spring.market_api.exception.ProductNotFoundException;
+import com.ilare.spring.market_api.exception.ForbiddenException;
 import com.ilare.spring.market_api.exception.UserNotFoundException;
-import com.ilare.spring.market_api.repository.ProductRepository;
 import com.ilare.spring.market_api.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.ilare.spring.market_api.security.Role;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private ProductService productService;
+    private final UserRepository userRepository;
 
-    public void addUser(User user) {
-        userRepository.save(user); // требуется валидация данных
+    private final PasswordEncoder passwordEncoder;
+
+    public void saveUser(User user, Principal principal) throws ForbiddenException { //TODO fix
+
+        User principalUser = userRepository.findByEmail(principal.getName());
+
+        if (user.getId() == principalUser.getId() || principalUser.getRole() == Role.ADMIN) {
+
+            if (!passwordEncoder.matches(user.getPassword(), principalUser.getPassword())) {
+                String password = passwordEncoder.encode(user.getPassword());
+                user.setPassword(password);
+            }
+            userRepository.save(user);
+        }
+        else {
+            throw new ForbiddenException("User must have admin permissions");
+        }
     }
 
-    public void deleteUser(Long id) throws UserNotFoundException {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+    public void deleteUser(Long id, Principal principal) throws UserNotFoundException, ForbiddenException {
 
-        userRepository.delete(user);
+        User principalUser = userRepository.findByEmail(principal.getName());
+
+        if (principalUser.getRole() == Role.ADMIN) {
+            User user = userRepository.findById(id)
+                    .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+            userRepository.delete(user);
+        }
+        else {
+            throw new ForbiddenException("User must have admin permissions");
+        }
     }
 
     public User getUserById(Long userId) throws UserNotFoundException {

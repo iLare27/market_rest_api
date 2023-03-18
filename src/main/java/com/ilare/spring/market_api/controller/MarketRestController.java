@@ -1,5 +1,6 @@
 package com.ilare.spring.market_api.controller;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -7,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 public class MarketRestController {
 
     @GetMapping
-    public String welcomeMsg(){
-        return "Market API";
+    public ResponseEntity<String> welcomeMsg(){
+        return ResponseEntity.ok("made by iLare");
     }
 }

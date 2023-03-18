@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class MarketApiApplicationTests {
+class MarketApiApplicationTests { //TODO write unit tests for api
 
     @Test
     void contextLoads() {

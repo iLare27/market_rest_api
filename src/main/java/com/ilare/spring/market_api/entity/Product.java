@@ -15,6 +15,8 @@ import java.util.List;
 @AllArgsConstructor
 public class Product {
 
+    //TODO add product categories
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -35,7 +37,6 @@ public class Product {
     @Column(name = "user_id", insertable = false, updatable = false)
     private Long userId;
 
-    //добавить переменную - категория товара
     @ManyToOne
     @JoinColumn(name = "user_id")
     @JsonIgnore

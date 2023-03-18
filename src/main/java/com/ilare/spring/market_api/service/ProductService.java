@@ -2,49 +2,54 @@ package com.ilare.spring.market_api.service;
 
 import com.ilare.spring.market_api.entity.Product;
 import com.ilare.spring.market_api.entity.User;
+import com.ilare.spring.market_api.exception.ForbiddenException;
+import com.ilare.spring.market_api.exception.InvalidProductException;
 import com.ilare.spring.market_api.exception.ProductNotFoundException;
-import com.ilare.spring.market_api.exception.UserNotFoundException;
 import com.ilare.spring.market_api.repository.ProductRepository;
 import com.ilare.spring.market_api.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ProductService {
-    @Autowired
-    private ProductRepository productRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+    private final ProductRepository productRepository;
 
-    @Autowired
-    private ImageService imageService;
+    private final UserRepository userRepository;
 
-    public void addProduct(Product product, Long userId) throws UserNotFoundException {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
-        user.addProductToUser(product);
+    public void saveProduct(Product product, Principal principal) throws InvalidProductException {
 
-        productRepository.save(product);
-        userRepository.save(user);
+        User user = userRepository.findByEmail(principal.getName());
+
+        if (product.getName() != null && product.getPrice() != null) {
+            user.addProductToUser(product);
+
+            productRepository.save(product);
+            userRepository.save(user);
+        }
+        else {
+            throw new InvalidProductException("Product must have name and price");
+        }
     }
 
-    public void updateProduct(Product product, Long userId) throws UserNotFoundException {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
-        user.addProductToUser(product);
+    public void deleteProduct(Long productId, Principal principal) throws ProductNotFoundException, ForbiddenException {
 
-        productRepository.save(product);
-        userRepository.save(user);
-    }
-    public void deleteProduct(Long productId) throws ProductNotFoundException {
+        User user = userRepository.findByEmail(principal.getName());
+
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException("Product not found"));
 
-        productRepository.delete(product);
+        if (user.getId() == product.getUserId()) {
+            productRepository.delete(product);
+        }
+        else {
+            throw new ForbiddenException("User must have permission");
+        }
     }
 
     public Product getProductById(Long productId) throws ProductNotFoundException, IOException {
@@ -58,11 +63,4 @@ public class ProductService {
         List<Product> products = productRepository.findAll();
         return products;
     }
-
-//    private void deletePhoto(String photoPath) {
-//        File file = new File(photoPath);
-//        if (file.exists()) {
-//            file.delete();
-//        }
-//    }
 }
