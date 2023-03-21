@@ -19,6 +19,7 @@ import com.ilare.spring.market_api.repository.ProductRepository;
 import com.ilare.spring.market_api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,10 +31,10 @@ public class ImageService { //TODO add image validation
 
     private final ImageRepository imgRepository;
 
-    @Autowired
-    UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    private String IMG_DIR = "src/main/resources/photos/";
+    @Value("${image.dir}")
+    private String IMG_DIR;
 
     public void addImage(MultipartFile file, Long productId, Principal principal) throws IOException, ProductNotFoundException, ForbiddenException {
 

@@ -5,6 +5,7 @@ import com.ilare.spring.market_api.exception.ForbiddenException;
 import com.ilare.spring.market_api.exception.ImageNotFoundException;
 import com.ilare.spring.market_api.service.ImageService;
 import com.ilare.spring.market_api.service.ProductService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,13 +16,10 @@ import java.security.Principal;
 
 @RestController
 @RequestMapping("/api/images")
+@RequiredArgsConstructor
 public class ImageRestController {
 
-    @Autowired
     ImageService imageService;
-
-    @Autowired
-    ProductService productService;
 
     @GetMapping("/{imageId}")
     public ResponseEntity<ImageDTO> getImage(@PathVariable Long imageId) {

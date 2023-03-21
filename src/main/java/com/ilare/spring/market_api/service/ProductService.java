@@ -23,18 +23,12 @@ public class ProductService {
     private final UserRepository userRepository;
 
     public void saveProduct(Product product, Principal principal) throws InvalidProductException {
-
         User user = userRepository.findByEmail(principal.getName());
 
-        if (product.getName() != null && product.getPrice() != null) {
-            user.addProductToUser(product);
+        user.addProductToUser(product);
 
-            productRepository.save(product);
-            userRepository.save(user);
-        }
-        else {
-            throw new InvalidProductException("Product must have name and price");
-        }
+        productRepository.save(product);
+        userRepository.save(user);
     }
 
     public void deleteProduct(Long productId, Principal principal) throws ProductNotFoundException, ForbiddenException {

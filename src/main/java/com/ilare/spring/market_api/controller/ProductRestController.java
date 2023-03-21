@@ -6,8 +6,8 @@ import com.ilare.spring.market_api.exception.InvalidProductException;
 import com.ilare.spring.market_api.exception.ProductNotFoundException;
 import com.ilare.spring.market_api.service.ImageService;
 import com.ilare.spring.market_api.service.ProductService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,14 +20,14 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/products")
 @RequiredArgsConstructor
-public class ProductRestController { //TODO do User verification (role, id)
+public class ProductRestController {
 
     private final ProductService productService;
 
     private final ImageService imageService;
 
     @PostMapping
-    public ResponseEntity<Product> addProduct(@RequestBody Product product, Principal principal) {
+    public ResponseEntity<?> addProduct(@RequestBody @Valid Product product, Principal principal) {
         try {
             productService.saveProduct(product, principal);
             return ResponseEntity.ok(product);
@@ -38,7 +38,7 @@ public class ProductRestController { //TODO do User verification (role, id)
     }
 
     @PutMapping
-    public ResponseEntity<Product> updateProduct(@RequestBody Product product, Principal principal) {
+    public ResponseEntity<?> updateProduct(@RequestBody @Valid Product product, Principal principal) {
         try {
             productService.saveProduct(product, principal);
             return ResponseEntity.ok(product);

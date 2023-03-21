@@ -2,6 +2,8 @@ package com.ilare.spring.market_api.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,7 +17,6 @@ import java.util.List;
 @AllArgsConstructor
 public class Product {
 
-    //TODO add product categories
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,11 +24,14 @@ public class Product {
     private long id;
 
     @Column(name = "name")
+    @NotBlank(message = "Name cannot be blank")
     private String name;
 
     @Column(name = "price")
+    @Min(value = 99, message = "Price must be at least 100")
     private Double price;
 
+    @NotBlank(message = "Description cannot be blank")
     @Column(name = "description")
     private String description;
 
